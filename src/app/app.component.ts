@@ -1,4 +1,3 @@
-// src/app/app.component.ts
 import { Component } from '@angular/core';
 import { AppLayoutComponent } from './shared/components/app-layout.component';
 

@@ -28,6 +28,21 @@ export interface CreateAccountCommand {
   initialBalance: number;
 }
 
+export interface Transfer {
+  id: string;
+  customerId: string;
+  fromAccountId: string;
+  toAccountId: string;
+  amount: number;
+  createdAt: string;
+}
+
+export interface CreateTransferCommand {
+  fromAccountId: string;
+  toAccountId: string;
+  amount: number;
+}
+
 export interface ProblemDetails {
   type?: string;
   title?: string;

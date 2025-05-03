@@ -1,13 +1,9 @@
 import { Injectable, signal } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { AccountEntity } from './account.entity';
 import { ApiService } from '../../shared/services/api.service';
-import {
-  Account,
-  AccountData,
-  CreateAccountCommand,
-} from '../../shared/models/api-types';
+import { Account, AccountData } from '../../shared/models/api-types';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
@@ -34,14 +30,40 @@ export class AccountService {
       );
   }
 
-  fetchAccount(id: string): Observable<AccountEntity> {
+  fetchAccount(
+    customerId: string,
+    accountId: string
+  ): Observable<AccountEntity> {
     return this.apiService
-      .getById<Account>(this.endpoint, id)
+      .getById<Account>(`customers/${customerId}/accounts`, accountId)
       .pipe(
         map(
           (a) =>
             new AccountEntity(a.id, a.customerId, a.accountNumber, a.balance)
         )
+      );
+  }
+
+  fetchAccountsByIds(accountIds: string[]): Observable<AccountEntity[]> {
+    if (!accountIds.length) {
+      return of([]);
+    }
+    return this.apiService
+      .getWithQuery<Account>('customers/accounts/batch', { accountIds })
+      .pipe(
+        map((accounts) => {
+          if (!accounts) {
+            return [];
+          }
+          return accounts.map(
+            (a) =>
+              new AccountEntity(a.id, a.customerId, a.accountNumber, a.balance)
+          );
+        }),
+        catchError((err) => {
+          console.error('fetchAccountsByIds error:', err);
+          return of([]);
+        })
       );
   }
 

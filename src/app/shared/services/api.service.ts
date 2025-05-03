@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ProblemDetails } from '../models/api-types';
@@ -23,11 +23,42 @@ export class ApiService {
       .pipe(catchError(this.handleError));
   }
 
+  getWithQuery<T>(
+    endpoint: string,
+    params: { [key: string]: string | string[] }
+  ): Observable<T[]> {
+    let httpParams = new HttpParams();
+    for (const key in params) {
+      if (Array.isArray(params[key])) {
+        (params[key] as string[]).forEach((value) => {
+          httpParams = httpParams.append(key, value);
+        });
+      } else {
+        httpParams = httpParams.append(key, params[key] as string);
+      }
+    }
+    return this.http
+      .get<{ value: T[] } | T[]>(`${this.apiUrl}/${endpoint}`, {
+        params: httpParams,
+      })
+      .pipe(
+        map((response) => {
+          console.log('getWithQuery response:', response); // Debug log
+          return this.extractValue<T[]>(response);
+        }),
+        catchError(this.handleError)
+      );
+  }
+
   create<T, U>(endpoint: string, data: U): Observable<string> {
     return this.http.post<T>(`${this.apiUrl}/${endpoint}`, data).pipe(
       map((response: any) => response.id ?? ''),
       catchError(this.handleError)
     );
+  }
+
+  private extractValue<T extends object>(response: { value: T } | T): T {
+    return 'value' in response ? response.value : response;
   }
 
   private handleError(error: any): Observable<never> {

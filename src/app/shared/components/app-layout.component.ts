@@ -1,7 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import {
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { NgbCollapseModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   standalone: true,
@@ -27,6 +33,7 @@ import { NgbCollapseModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
         </button>
         <div class="collapse navbar-collapse" [ngbCollapse]="isMenuCollapsed()">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            @if (authService.isAuthenticated()) {
             <li class="nav-item">
               <a
                 class="nav-link"
@@ -57,6 +64,14 @@ import { NgbCollapseModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
                 >Transfers</a
               >
             </li>
+            <li class="nav-item">
+              <a
+                class="nav-link btn btn-outline-danger ms-2"
+                (click)="onLogout()"
+                >Logout</a
+              >
+            </li>
+            }
           </ul>
         </div>
       </div>
@@ -96,5 +111,18 @@ import { NgbCollapseModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
   `,
 })
 export class AppLayoutComponent {
+  authService = inject(AuthService);
+  private router = inject(Router);
   isMenuCollapsed = signal(true);
+
+  onLogout() {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        console.error('Logout error:', err);
+      },
+    });
+  }
 }

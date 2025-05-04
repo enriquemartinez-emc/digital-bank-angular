@@ -11,15 +11,17 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   getAll<T>(endpoint: string): Observable<T[]> {
-    return this.http.get<T[]>(`${this.apiUrl}/${endpoint}`).pipe(
-      map((response) => response ?? []),
-      catchError(this.handleError)
-    );
+    return this.http
+      .get<T[]>(`${this.apiUrl}/${endpoint}`, { withCredentials: true })
+      .pipe(
+        map((response) => response ?? []),
+        catchError(this.handleError)
+      );
   }
 
   getById<T>(endpoint: string, id: string): Observable<T> {
     return this.http
-      .get<T>(`${this.apiUrl}/${endpoint}/${id}`)
+      .get<T>(`${this.apiUrl}/${endpoint}/${id}`, { withCredentials: true })
       .pipe(catchError(this.handleError));
   }
 
@@ -40,6 +42,7 @@ export class ApiService {
     return this.http
       .get<{ value: T[] } | T[]>(`${this.apiUrl}/${endpoint}`, {
         params: httpParams,
+        withCredentials: true,
       })
       .pipe(
         map((response) => {
@@ -51,10 +54,12 @@ export class ApiService {
   }
 
   create<T, U>(endpoint: string, data: U): Observable<string> {
-    return this.http.post<T>(`${this.apiUrl}/${endpoint}`, data).pipe(
-      map((response: any) => response.id ?? ''),
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<T>(`${this.apiUrl}/${endpoint}`, data, { withCredentials: true })
+      .pipe(
+        map((response: any) => response.id ?? ''),
+        catchError(this.handleError)
+      );
   }
 
   private extractValue<T extends object>(response: { value: T } | T): T {

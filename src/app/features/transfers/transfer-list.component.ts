@@ -51,7 +51,6 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
       <table class="table table-striped table-bordered">
         <thead>
           <tr>
-            <th>ID</th>
             <th>From Account</th>
             <th>From Customer</th>
             <th>To Account</th>
@@ -62,13 +61,12 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
           </tr>
         </thead>
         <tbody>
-          @for (transfer of enrichedTransfers(); track transfer.id) {
+          @for (transfer of transfers(); track transfer.id) {
           <tr>
-            <td>{{ transfer.id }}</td>
             <td>{{ transfer.fromAccountNumber }}</td>
-            <td>{{ transfer.fromCustomerName }}</td>
+            <td>{{ transfer.fromCustomerFullName }}</td>
             <td>{{ transfer.toAccountNumber }}</td>
-            <td>{{ transfer.toCustomerName }}</td>
+            <td>{{ transfer.toCustomerFullName }}</td>
             <td>{{ transfer.amount | currency }}</td>
             <td>{{ transfer.date | date : 'yyyy-MM-dd hh:mm a' }}</td>
             <td>
@@ -153,37 +151,15 @@ export class TransferListComponent {
       this.enrichedTransfers.set([]);
       return;
     }
-
-    const accountIds = Array.from(
-      new Set([
-        ...transfers.map((t) => t.fromAccountId),
-        ...transfers.map((t) => t.toAccountId),
-      ])
-    );
-    this.accountService.fetchAccountsByIds(accountIds).subscribe((accounts) => {
-      const accountMap = new Map(
-        accounts.map((a) => [
-          a.id,
-          {
-            accountNumber: a.accountNumber,
-            customerName: this.customerNameCache.get(a.customerId) || 'Unknown',
-          },
-        ])
-      );
-      const enriched = transfers.map((t) => ({
-        id: t.id,
-        fromAccountNumber:
-          accountMap.get(t.fromAccountId)?.accountNumber || t.fromAccountId,
-        fromCustomerName:
-          accountMap.get(t.fromAccountId)?.customerName || 'Unknown',
-        toAccountNumber:
-          accountMap.get(t.toAccountId)?.accountNumber || t.toAccountId,
-        toCustomerName:
-          accountMap.get(t.toAccountId)?.customerName || 'Unknown',
-        amount: t.amount,
-        date: t.date,
-      }));
-      this.enrichedTransfers.set(enriched);
-    });
+    const enriched = transfers.map((t) => ({
+      id: t.id,
+      fromAccountNumber: t.fromAccountNumber,
+      fromCustomerName: t.fromCustomerFullName,
+      toAccountNumber: t.toAccountNumber,
+      toCustomerName: t.toCustomerFullName,
+      amount: t.amount,
+      date: t.date,
+    }));
+    this.enrichedTransfers.set(enriched);
   }
 }

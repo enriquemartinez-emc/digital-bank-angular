@@ -33,6 +33,10 @@ export interface Transfer {
   customerId: string;
   fromAccountId: string;
   toAccountId: string;
+  fromAccountNumber: string;
+  toAccountNumber: string;
+  fromCustomerFullName: string;
+  toCustomerFullName: string;
   amount: number;
   createdAt: string;
 }

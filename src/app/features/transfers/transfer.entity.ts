@@ -4,6 +4,10 @@ export class TransferEntity {
     public customerId: string,
     public fromAccountId: string,
     public toAccountId: string,
+    public fromAccountNumber: string,
+    public toAccountNumber: string,
+    public fromCustomerFullName: string,
+    public toCustomerFullName: string,
     public amount: number,
     public date: string
   ) {}
@@ -18,6 +22,10 @@ export class TransferEntity {
       '',
       data.fromAccountId,
       data.toAccountId,
+      '',
+      '',
+      '',
+      '',
       data.amount,
       ''
     );

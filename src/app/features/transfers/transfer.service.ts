@@ -26,6 +26,10 @@ export class TransferService {
                 t.customerId || '', // Handle if customerId is not returned
                 t.fromAccountId,
                 t.toAccountId,
+                t.fromAccountNumber,
+                t.toAccountNumber,
+                t.fromCustomerFullName,
+                t.toCustomerFullName,
                 t.amount,
                 t.createdAt
               )
@@ -47,6 +51,10 @@ export class TransferService {
               t.customerId || '',
               t.fromAccountId,
               t.toAccountId,
+              t.fromAccountNumber,
+              t.toAccountNumber,
+              t.fromCustomerFullName,
+              t.toCustomerFullName,
               t.amount,
               t.createdAt
             )
